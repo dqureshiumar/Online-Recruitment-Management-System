@@ -1,0 +1,133 @@
+<?php 
+
+session_start();
+
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <?php include 'plugins.php';?>
+    
+   </head>
+   <body>
+
+   <div class="container">
+   
+    <?php include 'header.php';?>
+
+    <div id="main">
+    
+    <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>JOB ID</th>
+        <th>CATEOGARY</th>
+        <th>TITLE</th>
+        <th>DESCRIPTION</th>
+        <th>EMAIL</th>
+        <th>CONTACT</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php
+
+          $servername="localhost";
+          $username="root";
+          $password="";
+          $dbname="orms";
+
+          $conn=mysqli_connect($servername,$username,$password,$dbname);
+
+          if(!$conn){
+              die("connection failed:" . mysqli_connect_error());
+          }
+
+          $sql = "SELECT * from adminpastejob WHERE jobid=?";
+          
+          $sessionID = session_id();
+          
+          $stmt = $conn->stmt_init();
+            $stmt->prepare($sql);
+            $stmt->bind_param("s",$jobid);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            //$resultArray = $result->fetch_assoc();
+          
+          while($resultArray = $result->fetch_assoc())
+          {
+            echo '<tr>';
+            echo '<td>'.$resultArray['jobid'].'</td>';
+            echo '<td>'.$resultArray['cateogary'].'</td>';
+            echo '<td>'.$resultArray['title'].'</td>';
+            echo '<td>'.$resultArray['description'].'</td>';
+            echo '<td>'.$resultArray['email'].'</td>';
+            echo '<td>'.$resultArray['contact'].'</td>';
+            echo '<td>';
+            echo '<a href="#"><i class="fa fa-trash fa-lg text-danger"></i>';
+            echo '</a>';
+            echo '</td>';
+            echo '</tr>';
+          }
+      ?>
+      
+    </tbody>
+  </table>
+
+    <div id="checkout">
+        <p class="lead text-right">
+        </p>        
+        <form class="float-right" action="<?php $_SERVER['PHP_SELF']; ?>" method="POST">
+            <input type="submit" class="btn btn-primary" value="Checkout">
+        </form>  
+        <?php
+            if($_SERVER["REQUEST_METHOD"]=="POST")
+            {
+                $servername="localhost";
+                $username="root";
+                $password="";
+                $dbname="orms";
+
+                $conn=mysqli_connect($servername,$username,$password,$dbname);
+
+                if(!$conn){
+                    die("connection failed:" . mysqli_connect_error());
+                }
+                $userID = 1;  //$_SESSION['userID'];
+                $orderDate = date("Y-m-d");
+
+                $sql="insert into jobs (userID, TotalAmount, orderDate) values ('$userID', '$totalamount', '$orderDate')";
+                
+                if(mysqli_query($conn,$sql))
+                {
+                  $orderID = mysqli_insert_id($conn);
+                }
+                $sql = "INSERT INTO order_items (orderID, productID, quantity) SELECT '$orderID' as orderID, productID, quantity FROM cart WHERE sessionID = '$sessionID'";
+
+                mysqli_query($conn,$sql);
+
+                $sql = "delete from cart where sessionID = '$sessionID'";
+
+                if (mysqli_query($conn,$sql))
+                {
+                    echo "<script>swal('Checkout','Your order has been confirmed.','info').then(() => { window.location.href='index.php'; });</script>";
+                }
+                else
+                {
+                    echo"Error:" .mysqli_error($conn);
+                }
+                mysqli_close($conn);               
+            }                            
+            ?>
+    </div>
+    </div>
+    <br>
+    <br>
+    <?php include 'footer.php';?>
+    </div>
+</body>
+</html>

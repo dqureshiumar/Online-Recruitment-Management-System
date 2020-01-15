@@ -1,0 +1,9 @@
+<!-- <input type="hidden" name="txtPID" id="txtPID" value="<?php $_GET['id']; ?>">
+                                Price: <i class="fa fa-inr"></i> <label id="lblRate"><?php echo $rate;?></label> /-
+                                <input type="hidden" name="txtrate"  id="txtrate" value='<?php echo $rate;?>'>
+                                <br>
+                                Quantity: <input id="txtQuantity" name="txtQuantity"  type="number" onkeyup="calculate();" onchange="calculate();" min="1" class="form-control w-25" value="1" name="txtqty" id="txtqty">
+                                <br>
+                                Total: <i class="fa fa-inr"></i><label id="lblTotal"><?php echo $rate;?></label>/-
+                                <input type="hidden"  name="txtTotal" id="txtTotal" <?php echo $rate;?>>
+                                <br> -->
